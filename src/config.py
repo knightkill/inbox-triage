@@ -97,6 +97,7 @@ class Settings:
     gmail_account: str
     dry_run: bool
     daily_limit: int
+    triage_limit: int  # max messages the scheduled run processes per tick
 
 
 @lru_cache(maxsize=1)
@@ -117,4 +118,5 @@ def get_settings() -> Settings:
         gmail_account=_optional("GMAIL_ACCOUNT", "me"),
         dry_run=_optional("TRIAGE_DRY_RUN", "true").lower() != "false",
         daily_limit=int(_optional("TRIAGE_DAILY_LIMIT", "500")),
+        triage_limit=int(_optional("TRIAGE_LIMIT", "25")),
     )

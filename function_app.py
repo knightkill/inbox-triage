@@ -73,8 +73,11 @@ def run_triage(query: str = DEFAULT_QUERY, limit: int = 25) -> dict:
 
 @app.timer_trigger(schedule="0 */10 * * * *", arg_name="timer", run_on_startup=False)
 def handle_scheduled_triage(timer: func.TimerRequest) -> None:
-    """Run the triage pipeline on a schedule (every 10 minutes)."""
-    summary = run_triage()
+    """Run the triage pipeline on a schedule (every 10 minutes).
+
+    Batch size per tick = TRIAGE_LIMIT app setting (default 25).
+    """
+    summary = run_triage(limit=get_settings().triage_limit)
     logging.info("scheduled triage complete: %s", summary)
 
 
