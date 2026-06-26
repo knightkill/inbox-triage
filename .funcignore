@@ -1,0 +1,15 @@
+# Never deploy these to Azure Functions (secrets + local cruft).
+.venv/
+.git/
+.env
+local.settings.json
+credentials.json
+token.json
+state/
+*.audit.jsonl
+__pycache__/
+*.pyc
+.pytest_cache/
+scratchpad/
+.vscode/
+.idea/

@@ -12,6 +12,7 @@ label IDs (e.g. "Label_12"), not display names, so we list labels once and map.
 
 from __future__ import annotations
 
+import json
 import os
 
 from google.auth.transport.requests import Request
@@ -28,8 +29,37 @@ TOKENFILE = "token.json"
 CREDENTIALS_FILE = "credentials.json"
 
 
+def _cloud_token_json() -> str | None:
+    """Return stored token.json contents when running headless (cloud), else None.
+
+    The deployed Function has no browser, so the OAuth refresh token is supplied via
+    Key Vault (resolved through get_settings) or a GMAIL_TOKEN_JSON env var — never
+    the interactive flow. We only touch get_settings when KEY_VAULT_URI is set so
+    local OAuth minting doesn't need full app settings.
+    """
+    if os.environ.get("GMAIL_TOKEN_JSON"):
+        return os.environ["GMAIL_TOKEN_JSON"]
+    if os.environ.get("KEY_VAULT_URI"):
+        from src.config import get_settings
+
+        return get_settings().gmail_token_json
+    return None
+
+
 def authenticate_gmail():  # -> Resource
-    """Return an authorized Gmail service (adapt invoice-fetcher gmail_authenticate)."""
+    """Return an authorized Gmail service.
+
+    Cloud (headless): build credentials from the stored token (Key Vault / env) and
+    refresh — no browser. Local: cache in token.json, running the interactive OAuth
+    flow on first use.
+    """
+    token_json = _cloud_token_json()
+    if token_json:
+        creds = Credentials.from_authorized_user_info(json.loads(token_json), GMAIL_SCOPES)
+        if not creds.valid and creds.expired and creds.refresh_token:
+            creds.refresh(Request())
+        return build("gmail", "v1", credentials=creds)
+
     creds = None
     if os.path.exists(TOKENFILE):
         creds = Credentials.from_authorized_user_file(TOKENFILE, GMAIL_SCOPES)
