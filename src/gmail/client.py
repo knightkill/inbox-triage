@@ -86,12 +86,24 @@ def extract_fields(message: dict) -> dict:
 
     def header(name: str) -> str:
         target = name.lower()
-        return next(h["value"])
+        return next((h["value"] for h in headers if h["name"].lower() == target), "")
+
+    return {
+        "sender": header("From"),
+        "subject": header("Subject"),
+        "snippet": message.get("snippet", ""),
+        "has_attachment": _has_attachment(message.get("payload", {})),
+    }
+
+
+def _has_attachment(part: dict) -> bool:
+    """True if this MIME part (or any child) is a real attachment."""
+    if part.get("filename") and part.get("body", {}).get("attachmentId"):
+        return True
+    return any(_has_attachment(child) for child in part.get("parts", []))
 
 
 def build_label_index(service) -> dict[str, str]:
-    """Return {label_name: label_id} from users().labels().list().
-
-    Cache this once per run — modify() needs IDs, not names (HARP-5.3: explicit).
-    """
-    raise NotImplementedError("TODO(M2): list labels and map name->id")
+    """Return {label_name: label_id} so modify() can resolve names to ids (M3)."""
+    response = service.users().labels().list(userId="me").execute()
+    return {label["name"]: label["id"] for label in response.get("labels", [])}
