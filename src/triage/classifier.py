@@ -15,10 +15,22 @@ which validates the reply against the pydantic model and hands you a typed objec
 
 from __future__ import annotations
 
-# from openai import AzureOpenAI
-# from src.config import get_settings
-# from src.triage.models import TriageVerdict
+from functools import lru_cache
+from openai import AzureOpenAI
+from src.config import get_settings
+from src.triage.models import TriageVerdict
 
+MAX_BODY_CHARS = 2000
+
+@lru_cache(maxsize=1)
+def _client() -> AzureOpenAI:
+    """Build an AzureOpenAI client from get_settings()."""
+    settings = get_settings()
+    return AzureOpenAI(
+        azure_endpoint=settings.openai_endpoint,
+        api_key=settings.openai_key,
+        api_version=settings.openai_api_version,
+    )
 
 def load_policy(path: str = "policy.md") -> str:
     """Read the triage policy that will be injected as the system prompt."""
@@ -40,4 +52,19 @@ def classify_email(subject: str, sender: str, body: str, policy: str):  # -> Tri
       4. Return the parsed verdict. If .parse() isn't supported on nano, fall back to
          response_format={"type":"json_schema", ...} or to gpt-5-mini with more tokens.
     """
-    raise NotImplementedError("TODO(M1): implement the Azure OpenAI structured classify")
+    settings = get_settings()
+    email = f"From: {sender}\nSubject: {subject}\n\n{body[:MAX_BODY_CHARS]}"
+
+    completion = _client().beta.chat.completions.parse(
+        model=settings.openai_deployment,
+        messages=[
+            {"role": "system", "content": policy},
+            {"role": "user", "content": email},
+        ],
+        response_format=TriageVerdict,
+        max_completion_tokens=2000,
+    )
+    verdict = completion.choices[0].message.parsed
+    if verdict is None:
+        raise RuntimeError(f"Classifier returned no structured verdict for {subject!r}")
+    return verdict
