@@ -54,10 +54,19 @@ def _kv_client():
 
 
 def _secret(field: str, env_name: str, *, required: bool) -> str | None:
-    """Resolve a secret: Key Vault first (cloud), then env (local)."""
+    """Resolve a secret: Key Vault first (cloud), then env (local).
+
+    A secret that simply isn't in the vault (e.g. optional docintel-key before M4)
+    must not crash the app — fall through to env / None.
+    """
     client = _kv_client()
     if client is not None:
-        value = client.get_secret(_KV_SECRETS[field]).value
+        from azure.core.exceptions import ResourceNotFoundError
+
+        try:
+            value = client.get_secret(_KV_SECRETS[field]).value
+        except ResourceNotFoundError:
+            value = None
         if value:
             return value
     return _require(env_name) if required else os.environ.get(env_name)
