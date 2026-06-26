@@ -1,0 +1,24 @@
+# Azure Functions runtime (v2 programming model)
+azure-functions==1.21.3
+
+# Azure OpenAI — structured-output classifier (reuse trainGemma idiom)
+openai==1.59.6
+
+# Structured output / validation
+pydantic==2.10.4
+
+# Gmail (reuse personal-invoice-fetcher pattern)
+google-api-python-client==2.157.0
+google-auth-oauthlib==1.2.1
+google-auth-httplib2==0.2.0
+
+# Azure Document Intelligence (reuse personal-test-ms-doc-int: prebuilt-document)
+azure-ai-formrecognizer==3.3.3
+
+# Azure Blob (state + attachment staging) and secret resolution
+azure-storage-blob==12.24.0
+azure-identity==1.19.0
+azure-keyvault-secrets==4.9.0
+
+# Local dev: load .env for scripts
+python-dotenv==1.0.1

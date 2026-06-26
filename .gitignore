@@ -1,0 +1,28 @@
+# Secrets — NEVER commit (HARP-2.2: secrets come from Key Vault / local-only files)
+.env
+local.settings.json
+credentials.json
+token.json
+*.pem
+
+# Python
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+
+# Azure Functions
+bin/
+obj/
+.python_packages/
+
+# Local state / audit artifacts
+state/
+*.audit.jsonl
+
+# OS / editor
+.DS_Store
+.idea/
+.vscode/

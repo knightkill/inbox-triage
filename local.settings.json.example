@@ -1,0 +1,25 @@
+{
+  "IsEncrypted": false,
+  "Values": {
+    "AzureWebJobsStorage": "UseDevelopmentStorage=true",
+    "FUNCTIONS_WORKER_RUNTIME": "python",
+
+    "AZURE_OPENAI_ENDPOINT": "https://YOUR-RESOURCE.openai.azure.com/",
+    "AZURE_OPENAI_KEY": "",
+    "AZURE_OPENAI_DEPLOYMENT_NAME": "gpt-4o-mini",
+    "AZURE_OPENAI_API_VERSION": "2024-12-01-preview",
+
+    "AZURE_DOCINTEL_ENDPOINT": "https://YOUR-DOCINTEL.cognitiveservices.azure.com/",
+    "AZURE_DOCINTEL_KEY": "",
+
+    "AZURE_STORAGE_CONNECTION_STRING": "",
+    "TRIAGE_STATE_CONTAINER": "triage-state",
+
+    "GMAIL_ACCOUNT": "me",
+    "TRIAGE_DRY_RUN": "true",
+    "TRIAGE_DAILY_LIMIT": "500",
+
+    "_comment_keyvault": "In Azure, set KEY_VAULT_URI and grant the Function's managed identity 'get' on secrets; config.py prefers Key Vault when KEY_VAULT_URI is set (M5).",
+    "KEY_VAULT_URI": ""
+  }
+}
