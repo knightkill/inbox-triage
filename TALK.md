@@ -8,9 +8,10 @@ Setup guide (for the audience): [SETUP.md](./SETUP.md)
 - Gmail open to the messy inbox (the "before").
 - Local demos are dry-run unless `--live` — decide which senders/emails are OK on the projector.
 - Backup video of the full flow ready (network / cold-start insurance).
+- Set your deployed names (your real values): `RG=<your-rg>; FUNCAPP=<your-function-app>`
 - Pre-grab the function key for the live cloud call:
   ```bash
-  KEY=$(az functionapp keys list -g rg-prompt2productivity -n p2p-triage-4189 --query functionKeys.default -o tsv)
+  KEY=$(az functionapp keys list -g $RG -n $FUNCAPP --query functionKeys.default -o tsv)
   ```
 - Optional: refresh the "before" inbox count for the opening.
 
@@ -28,15 +29,15 @@ Setup guide (for the audience): [SETUP.md](./SETUP.md)
 | 7 Acts safely | "Acting on real mail is the scary part." | `python scripts/run_local.py --query "in:inbox is:unread" --limit 5` (dry-run) | decision table, nothing mutated |
 | 7 (audit) | "Every decision is logged + undoable." | `tail state/decisions.audit.jsonl` | audit lines |
 | 8 Two homes (diagram) | "Same code runs locally and on Azure — only the edges differ." | point at the local‑vs‑Azure diagram | — |
-| 9 Setup (DIY) | "You can do all of this — one guide." | open `SETUP.md`; prove it's real: `az resource list -g rg-prompt2productivity -o table` | the deployed resources |
-| 10 Azure pieces | "And it runs unattended." | `curl "https://p2p-triage-4189.azurewebsites.net/api/triage?limit=5&code=$KEY"` | live `{"processed":…,"archived":…}` |
+| 9 Setup (DIY) | "You can do all of this — one guide." | open `SETUP.md`; prove it's real: `az resource list -g $RG -o table` | the deployed resources |
+| 10 Azure pieces | "And it runs unattended." | `curl "https://$FUNCAPP.azurewebsites.net/api/triage?limit=5&code=$KEY"` | live `{"processed":…,"archived":…}` |
 | 11 Achieved | before→after; "$0, every 10 min" | — | — |
 | 12 Reproduce it | "Clone it, point it at your inbox." | repo URL + QR on screen | — |
 
 ## The "audience can do it themselves" moment (slides 9 → 12)
 Don't provision live (too slow). Instead:
 1. Open `SETUP.md` — "30 minutes, every command is here."
-2. `az resource list -g rg-prompt2productivity -o table` — they see the real RG (Function, Key Vault, Storage).
+2. `az resource list -g $RG -o table` — they see the real RG (Function, Key Vault, Storage).
 3. Call out the two non-obvious bits the guide solves: **Gmail OAuth → refresh token → Key Vault** (headless, no browser in cloud) and **`func publish`, not zip** (Linux Consumption won't remote-build a zip).
 4. Land on slide 12: scan the QR → `git clone` → `.env` → `SETUP.md`.
 
@@ -44,7 +45,7 @@ Don't provision live (too slow). Instead:
 - Slides 6–7 are dry-run (no projector mishaps).
 - Slide 10's `curl` is real but tiny.
 - The scheduled timer is currently throttled (2/tick) — pause anytime:
-  `az functionapp config appsettings set -n p2p-triage-4189 -g rg-prompt2productivity --settings TRIAGE_DRY_RUN=true`
+  `az functionapp config appsettings set -n $FUNCAPP -g $RG --settings TRIAGE_DRY_RUN=true`
 
 ## Dress-rehearsal checklist
 - [ ] Make the repo public: `gh repo edit knightkill/inbox-triage --visibility public --accept-visibility-change-consequences`
