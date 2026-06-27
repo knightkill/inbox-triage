@@ -16,15 +16,15 @@ the centrepiece of the talk.
             ┌──────────────────────── Azure ────────────────────────┐
  Timer ────▶│  Azure Function (Python)                              │
  (~10 min)  │    1. Gmail API  → list new/unread (skip processed)   │
-            │    2. attachment? → Blob → Document Intelligence      │
-            │    3. Azure OpenAI (gpt-4o-mini, structured output)   │
+            │    2. Azure OpenAI (gpt-5.4-nano, structured output)  │
             │         └─ judge vs policy.md → TriageVerdict         │
-            │    4. Gmail API  → apply labels / archive (guarded)   │
+            │    3. Gmail API  → apply labels / archive (guarded)   │
             │   secrets ← Key Vault (Managed Identity)              │
             └───────────────────────────────────────────────────────┘
 ```
 
-**Five Azure services:** Azure OpenAI · Functions · Document Intelligence · Blob · Key Vault.
+**Azure services in use:** Azure OpenAI · Functions · Key Vault · Blob (state/audit) · App Insights.
+*Reading attachments with Document Intelligence is **planned, not yet implemented** — see [Status & contributing](#status--contributing).*
 
 ## Quickstart
 ```bash
@@ -46,6 +46,24 @@ python scripts/run_local.py --samples # M1: classify the sample emails
 | M4 | Attachment-aware | `docs/intelligence.py` | invoice PDF → Finance/high |
 | M5 | Azure automation | `function_app.py` + Key Vault | runs on a schedule in Azure |
 | M6 | Talk polish | metrics + demo mode + 3 slides | 30-min dress rehearsal |
+
+## Status & contributing
+
+**Working today:** policy-driven classification (Azure OpenAI, structured output) →
+guarded label/archive on real Gmail → deployed on Azure Functions (Timer, every
+10 min) with secrets in Key Vault and state/audit in Blob. Defaults to dry-run.
+
+**Not implemented yet — attachment-aware triage.** The classifier judges an email
+from its **sender, subject and snippet only**. Reading PDF/image **attachments**
+(e.g. an invoice) into the verdict via **Azure Document Intelligence** is **stubbed**
+in [`src/docs/intelligence.py`](src/docs/intelligence.py) — `extract_attachment_text()`
+raises `NotImplementedError` and isn't wired into the pipeline. The plumbing is ready
+for it (the `has_attachment` flag is already extracted), but it didn't make this cut.
+
+**PRs welcome.** If you'd like to add it — or anything else — open a pull request.
+Good first PR: implement `extract_attachment_text()` in `src/docs/intelligence.py`
+(adapt the `azure-ai-formrecognizer` `prebuilt-document` pattern) and feed its text
+into the classifier when `fields["has_attachment"]` is true.
 
 ## Safety
 `TRIAGE_DRY_RUN=true` by default — nothing in Gmail is touched until you opt in,
