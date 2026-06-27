@@ -1,13 +1,4 @@
 """Gmail read access + label name→ID cache.
-
-M2: you write this, adapting ~/Code/personal-invoice-fetcher/src/gmail_api.py:
-  - gmail_authenticate()  (lines 26-42): installed-app OAuth + token.json refresh.
-    CHANGE the scopes to include gmail.modify (we'll mutate labels in M3).
-  - search_messages()     (lines 45-61): list message ids with pagination.
-  - get_message()         (lines 83-85): fetch a full message.
-
-New here (not in invoice-fetcher): a label name→ID cache. Gmail's modify API needs
-label IDs (e.g. "Label_12"), not display names, so we list labels once and map.
 """
 
 from __future__ import annotations

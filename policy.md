@@ -5,7 +5,7 @@ against it. Edit this file to change behaviour — no code change needed. That l
 edit is the centrepiece of the talk: one English file sorts thousands of emails.
 
 ## Who I am
-Hardip Patel — run anormaly labs; work across client and personal projects.
+Hardip Patel — work at Atyantik; run anormaly labs for building personal products; work across client and personal projects.
 My time is the scarce resource. Primary should only contain mail that needs *me*.
 
 ## KEEP IN PRIMARY (keep_in_primary = true)

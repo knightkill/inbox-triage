@@ -13,17 +13,6 @@ from pydantic import BaseModel, Field
 # from pydantic import BaseModel, Field
 
 
-# TODO(M1): define TriageVerdict.
-# Fields to capture (see policy.md "Output contract"):
-#   - category: str        (e.g. "Newsletter", "Client", "Receipt", "Personal")
-#   - importance: int      (0-100; constrain with Field(ge=0, le=100))
-#   - labels: list[str]    (Gmail label names to apply, e.g. ["News"])
-#   - keep_in_primary: bool
-#   - reason: str          (one line citing the policy rule)
-#
-# Consider an Enum for category so the model can only pick from a fixed set —
-# that makes downstream label mapping deterministic (HARP-5.3: explicit > magic).
-
 class Category(str, Enum):
     """
         The single semantic class of an email - a closed set so mapping is deterministic.
@@ -45,6 +34,7 @@ class Category(str, Enum):
 class Label(str, Enum):
     """
     A Gmail label to apply to an email.
+    Make sure the labels exists in your gmail.
     """
 
     NEWSLETTER = "Newsletter"

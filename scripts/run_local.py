@@ -16,6 +16,7 @@ import json
 import os
 import sys
 
+# Prepend the repo root to sys.path so `from src.triage...` style imports resolve when this file is run directly as a script
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from dotenv import load_dotenv
