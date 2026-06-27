@@ -71,7 +71,7 @@ def run_triage(query: str = DEFAULT_QUERY, limit: int = 25) -> dict:
     return counts
 
 
-@app.timer_trigger(schedule="0 */10 * * * *", arg_name="timer", run_on_startup=False)
+@app.timer_trigger(schedule="0 */5 * * * *", arg_name="timer", run_on_startup=False)
 def handle_scheduled_triage(timer: func.TimerRequest) -> None:
     """Run the triage pipeline on a schedule (every 10 minutes).
 
