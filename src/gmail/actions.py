@@ -18,6 +18,10 @@ VIP_SENDERS: set[str] = set()
 # System labels whose presence means "leave this message alone".
 PROTECTED_LABELS = frozenset({"STARRED", "IMPORTANT", "SENT"})
 
+# Categories whose mail is archived AND marked read (you'll never open these).
+# Anything not listed (e.g. receipt) is still archived but left UNREAD so it catches your eye.
+MARK_READ_CATEGORIES = frozenset({"promotion", "newsletter", "notification", "cold_outreach"})
+
 
 def sender_email(sender: str) -> str:
     """Extract the bare lowercase email from a 'Name <email>' From header."""
@@ -84,12 +88,15 @@ def apply_verdict(service, message, fields, verdict, label_index, *, dry_run=Tru
         if lid and lid not in current:
             add_ids.append(lid)
 
-    remove_ids = ["INBOX"] if (not verdict.keep_in_primary and "INBOX" in current) else []
+    archive = not verdict.keep_in_primary and "INBOX" in current
+    mark_read = verdict.category in MARK_READ_CATEGORIES and "UNREAD" in current
+    remove_ids = (["INBOX"] if archive else []) + (["UNREAD"] if mark_read else [])
 
     record = {
         "id": message.get("id"),
         "labels": target_names,
-        "archive": bool(remove_ids),
+        "archive": archive,
+        "mark_read": mark_read,
         "add_ids": add_ids,
         "remove_ids": remove_ids,
     }
