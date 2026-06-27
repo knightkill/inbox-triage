@@ -53,3 +53,16 @@ Don't provision live (too slow). Instead:
 - [ ] Refresh slide-9 framing / any numbers you mention from the audit log.
 - [ ] Decide the demo Gmail account; mask anything private.
 - [ ] Time it — target 25 min content + 5 min Q&A.
+
+## Code tour (live walkthrough, ~4–5 min)
+Follow **one email's journey**. Deep-dive the 3 starred files; just mention the rest.
+Anchor on the slide snippet first, then open the real file ("here it is for real").
+
+1. **`policy.md`** — *the input.* "Plain English; everything else just applies this." (show KEEP / ARCHIVE)
+2. **`src/triage/models.py`** → `class TriageVerdict` — *the shape of an answer.* reason first · `category: Category` (closed enum, not str) · `labels: list[Label]` · `Field(ge=0, le=100)`.
+3. ⭐ **`src/triage/classifier.py`** → `classify_email` — *the decision.* highlight the one line `response_format=TriageVerdict` → "this is what makes hallucination impossible."
+4. ⭐ **`src/gmail/actions.py`** → `apply_verdict` — *the action, safely.* point in order: `if is_protected(msg): return skipped` → `remove = [] if keep_in_primary else ["INBOX"]` ("archive = remove one label") → `if dry_run:` → `.modify(...)`.
+5. ⭐ **`function_app.py`** → `@app.timer_trigger(...)` + `run_triage` — *the automation.* the cron schedule + `if message_id in seen: continue` ("idempotent").
+6. **Mention, don't open:** `config.py` (`DefaultAzureCredential` → Key Vault, "no keys in code") · `gmail/client.py` (`_cloud_token_json`, "headless, no browser") · `store/state.py` ("Blob memory").
+
+**Tips:** bump editor font to 18–20pt; fuzzy-open (`Cmd-P`) to jump to a function, don't scroll; use **go-to-definition** to travel `run_triage` → `classify_email` → `apply_verdict` (literally the email's path); pre-open the files as tabs in this order.
