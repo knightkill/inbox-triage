@@ -10,7 +10,7 @@ subscription. Everything defaults to **dry-run** — it won't touch your mail un
 - A Google account (for Gmail)
 
 ```bash
-git clone https://github.com/knightkill/prompt-to-productivity && cd prompt-to-productivity
+git clone https://github.com/knightkill/inbox-triage && cd inbox-triage
 python3.11 -m venv .venv && source .venv/bin/activate && pip install -r requirements.txt
 cp .env.example .env       # fill in as you go below
 ```

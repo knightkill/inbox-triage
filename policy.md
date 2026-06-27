@@ -11,7 +11,7 @@ My time is the scarce resource. Primary should only contain mail that needs *me*
 ## KEEP IN PRIMARY (keep_in_primary = true)
 - A real human writing to me personally (not a bulk/marketing send).
 - Anything about money, invoices, payments, taxes, contracts, or legal.
-- Anything about my companies/clients (anormaly, Atyantik, Wasserman, waveRFID, backoffice).
+- Anything about my companies or clients (e.g. Atyantik, anormaly).
 - A direct reply to a thread I participated in, or where I'm the only/primary recipient.
 - Security or account alerts that need action (login attempts, expiring credentials).
 - Time-sensitive logistics I personally must handle (travel, interviews, deadlines).
