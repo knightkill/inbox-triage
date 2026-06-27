@@ -22,35 +22,37 @@ Setup guide (for the audience): [SETUP.md](./SETUP.md)
 | 2 Who I am | 20-sec intro | — | — |
 | 3 Manual loop | "This is what we all do by hand." | switch to Gmail, scroll the 5,000-unread inbox | the pain, live |
 | 4 Same loop, automated | "Same four steps — different worker." | compare slide | — |
-| 5 How it decides | "The policy is the only config." | `cat policy.md` → `python scripts/run_local.py --samples` | typed verdicts |
-| 5 (the moment) | "I change the *rules*, not the code." | edit one line in `policy.md` (e.g. recruiter→KEEP) → re-run `--samples` | a verdict flips |
-| 6 Acts safely | "Acting on real mail is the scary part." | `python scripts/run_local.py --query "in:inbox is:unread" --limit 5` (dry-run) | decision table, nothing mutated |
-| 6 | "Every decision is logged + undoable." | `tail state/decisions.audit.jsonl` | audit lines |
-| 7 Setup (DIY) | "You can do all of this — one guide." | open `SETUP.md`; prove it's real: `az resource list -g rg-prompt2productivity -o table` | the deployed resources |
-| 8 Azure pieces | "And it runs unattended." | `curl "https://p2p-triage-4189.azurewebsites.net/api/triage?limit=5&code=$KEY"` | live `{"processed":…,"archived":…}` |
-| 9 Achieved | before→after; "$0, every 10 min" | — | — |
-| 10 Reproduce it | "Clone it, point it at your inbox." | repo URL + QR on screen | — |
+| 5 Build map (diagram) | "Here's the path: set up → run local → ship to Azure; attachments are homework." | point at the 4-stage diagram | the map |
+| 6 How it decides | "The policy is the only config." | `cat policy.md` → `python scripts/run_local.py --samples` | typed verdicts |
+| 6 (the moment) | "I change the *rules*, not the code." | edit one line in `policy.md` (e.g. recruiter→KEEP) → re-run `--samples` | a verdict flips |
+| 7 Acts safely | "Acting on real mail is the scary part." | `python scripts/run_local.py --query "in:inbox is:unread" --limit 5` (dry-run) | decision table, nothing mutated |
+| 7 (audit) | "Every decision is logged + undoable." | `tail state/decisions.audit.jsonl` | audit lines |
+| 8 Two homes (diagram) | "Same code runs locally and on Azure — only the edges differ." | point at the local‑vs‑Azure diagram | — |
+| 9 Setup (DIY) | "You can do all of this — one guide." | open `SETUP.md`; prove it's real: `az resource list -g rg-prompt2productivity -o table` | the deployed resources |
+| 10 Azure pieces | "And it runs unattended." | `curl "https://p2p-triage-4189.azurewebsites.net/api/triage?limit=5&code=$KEY"` | live `{"processed":…,"archived":…}` |
+| 11 Achieved | before→after; "$0, every 10 min" | — | — |
+| 12 Reproduce it | "Clone it, point it at your inbox." | repo URL + QR on screen | — |
 
-## The "audience can do it themselves" moment (slides 7 → 10)
+## The "audience can do it themselves" moment (slides 9 → 12)
 Don't provision live (too slow). Instead:
 1. Open `SETUP.md` — "30 minutes, every command is here."
 2. `az resource list -g rg-prompt2productivity -o table` — they see the real RG (Function, Key Vault, Storage).
 3. Call out the two non-obvious bits the guide solves: **Gmail OAuth → refresh token → Key Vault** (headless, no browser in cloud) and **`func publish`, not zip** (Linux Consumption won't remote-build a zip).
-4. Land on slide 10: scan the QR → `git clone` → `.env` → `SETUP.md`.
+4. Land on slide 12: scan the QR → `git clone` → `.env` → `SETUP.md`.
 
 ## Demo safety
-- Slides 5–6 are dry-run (no projector mishaps).
-- Slide 8's `curl` is real but tiny.
+- Slides 6–7 are dry-run (no projector mishaps).
+- Slide 10's `curl` is real but tiny.
 - The scheduled timer is currently throttled (2/tick) — pause anytime:
   `az functionapp config appsettings set -n p2p-triage-4189 -g rg-prompt2productivity --settings TRIAGE_DRY_RUN=true`
 
 ## Dress-rehearsal checklist
 - [ ] Make the repo public: `gh repo edit knightkill/inbox-triage --visibility public --accept-visibility-change-consequences`
 - [ ] Verify the QR resolves to the public repo (scan it).
-- [ ] Run slides 5, 6, 8 end-to-end once on the actual demo machine/network.
+- [ ] Run slides 6, 7, 10 end-to-end once on the actual demo machine/network.
 - [ ] Confirm `policy.md` edit → verdict flip works live.
 - [ ] Record the backup video.
-- [ ] Refresh slide-9 framing / any numbers you mention from the audit log.
+- [ ] Refresh slide-11 framing / any numbers you mention from the audit log.
 - [ ] Decide the demo Gmail account; mask anything private.
 - [ ] Time it — target 25 min content + 5 min Q&A.
 
